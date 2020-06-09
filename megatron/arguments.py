@@ -117,6 +117,15 @@ def _add_network_size_args(parser):
     group.add_argument('--max-position-embeddings', type=int, default=None,
                        help='Maximum number of position embeddings to use. '
                        'This is the size of position embedding.')
+    group.add_argument('--max-token-position-embeddings', type=int, default=None,
+                       help='Maximum number of token position embeddings to use. '
+                       'This is the size of token position embedding.')
+    group.add_argument('--max-sent-position-embeddings', type=int, default=None,
+                       help='Maximum number of sentence position embeddings to use. '
+                       'This is the size of sentence position embedding.')
+    group.add_argument('--max-para-position-embeddings', type=int, default=None,
+                       help='Maximum number of paragraph position embeddings to use. '
+                       'This is the size of paragraph position embedding.')
     group.add_argument('--make-vocab-size-divisible-by', type=int, default=128,
                        help='Pad the vocab size to be divisible by this value.'
                        'This is added for computational efficieny reasons.')

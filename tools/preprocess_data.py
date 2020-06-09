@@ -90,6 +90,46 @@ class Encoder(object):
             ids[key] = doc_ids
         return ids, len(json_line)
 
+
+class SegaEncoder(object):
+    # TODO: @ruixue support encode text and position index
+    def __init__(self, args):
+        self.args = args
+
+    def initializer(self):
+        # Use Encoder class as a container for global data
+        SegaEncoder.tokenizer = build_tokenizer(self.args)
+        if self.args.split_sentences:
+            if not nltk_available:
+                print("NLTK is not available to split sentences.")
+                exit()
+            splitter = nltk.load("tokenizers/punkt/english.pickle")
+            if self.args.keep_newlines:
+                # this prevents punkt from eating newlines after sentences
+                SegaEncoder.splitter = nltk.tokenize.punkt.PunktSentenceTokenizer(
+                    train_text = splitter._params,
+                    lang_vars = CustomLanguageVars())
+            else:
+                SegaEncoder.splitter = splitter
+
+        else:
+            SegaEncoder.splitter = IdentitySplitter()
+
+    def encode(self, json_line):
+        data = json.loads(json_line)
+        ids = {}
+        for key in self.args.json_keys:
+            text = data[key]
+            doc_ids = []
+            for sentence in SegaEncoder.splitter.tokenize(text):
+                sentence_ids = SegaEncoder.tokenizer.tokenize(sentence)
+                if len(sentence_ids) > 0:
+                    doc_ids.append(sentence_ids)
+            if self.args.append_eod:
+                doc_ids[-1].append(SegaEncoder.tokenizer.eod)
+            ids[key] = doc_ids
+        return ids, len(json_line)
+
 def get_args():
     parser = argparse.ArgumentParser()
     group = parser.add_argument_group(title='input data')
@@ -141,6 +181,7 @@ def get_args():
     return args
 
 def main():
+    # TODO: @ruixue support key='paragraph_index','sentence_index','token_index'
     args = get_args()
     startup_start = time.time()
 

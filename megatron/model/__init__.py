@@ -15,5 +15,5 @@
 
 from .distributed import *
 from .bert_model import BertModel
-from .gpt2_model import GPT2Model
+from .gpt2_model import GPT2Model,SegaGPT2Model
 from .utils import get_params_for_weight_decay_optimization
